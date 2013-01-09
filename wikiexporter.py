@@ -78,7 +78,7 @@ class WikiExporter(object):
         """
         f.close()
         
-        html = markdown.markdown(content)
+        html = markdown.markdown(content, extensions=['extra', 'codehilite'])
         
         soup = BeautifulSoup(html)
         
