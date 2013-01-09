@@ -17,7 +17,7 @@ The root doc and all documents linked will be included in html and all links wil
 
 #TODOS
 
-*  Support for other markup elements (images, ecc)
+*  Support for other markdown tags (images, ecc) and control used extensions
 *  Export to pdf 
 *  Support other markup formats  
 *  Options for parsing doc (recursive or not)
