@@ -1,7 +1,7 @@
 # Wikiexporter - a tool to export a github wiki to an html file
 
 A very simple github wiki exporter … really minimal right now
-(** Works only for markdown! **)
+( ** Works only for markdown! ** )
 
 
  Usage:
