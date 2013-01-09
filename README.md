@@ -1,4 +1,4 @@
-# Wikiexporter - a tool to export a gitub wiki to an html file
+# Wikiexporter - a tool to export a github wiki to an html file
 
 A very simple github wiki exporter … really minimal right now
 (** Works only for markdown! **)
@@ -17,7 +17,7 @@ The root doc and all documents linked will be included in html and all links wil
 
 #TODOS
 
-*  Support for other markdown tags (images, ecc) and control used extensions
+*  Support for other markup elements (images, ecc)
 *  Export to pdf 
 *  Support other markup formats  
 *  Options for parsing doc (recursive or not)
