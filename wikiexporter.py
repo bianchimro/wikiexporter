@@ -8,12 +8,14 @@ from bs4 import BeautifulSoup
 
 class WikiExporter(object):
     
-    def __init__(self, root_doc, options={}):
+    def __init__(self, root_docs, options={}):
     
-        self.root_doc = root_doc
+        self.root_docs = root_docs
         self.options = {}
 
         self.done_links = []
+        self.root_content = ""
+        self.included_content = ""
         self.content = ""
         
         
@@ -22,7 +24,8 @@ class WikiExporter(object):
         
         
     def export_doc(self, output_file):
-        self.parse_doc(self.root_doc)
+        for root_doc in self.root_docs:
+            self.parse_doc(root_doc)
         self.write_file(output_file)
     
     def get_doc_link_name(self, doc):
@@ -46,13 +49,14 @@ class WikiExporter(object):
         return self.slugify_name(name).replace("/", "-")
         
         
-    def get_doc_for_link(self, doc, link):
+    def get_doc_for_link(self, doc, link, root_doc):
     
         doc_link_name = self.get_doc_link_name(doc) 
         doc_ext = self.get_doc_link_ext(doc)
         
         file_list = []
-        for root, subFolders, files in os.walk(os.path.dirname(self.root_doc)):
+        
+        for root, subFolders, files in os.walk(os.path.dirname(root_doc)):
             if root.find(".git") > -1:
                 continue
             for file in files:
@@ -72,8 +76,13 @@ class WikiExporter(object):
             
         return None
         
+        
+    def replace_tag(self, soup, source_tag, dest_tag):
+        targets = soup.findAll(source_tag)
+        for t in targets:
+            t.name = dest_tag
             
-    def parse_doc(self, doc):
+    def parse_doc(self, doc, included=False):
     
         doc_link_name = self.get_doc_link_name(doc) 
     
@@ -94,8 +103,22 @@ class WikiExporter(object):
             links_list.append(href)
             slug_link = self.get_anchor_name(href)
             l["href"] =  "#" + slug_link
+            l["class"] = 'pageref'
+            
+        if included:
+            self.replace_tag(soup, "h5", "h6")
+            self.replace_tag(soup, "h4", "h5")            
+            self.replace_tag(soup, "h3", "h4")
+            self.replace_tag(soup, "h2", "h3")
+            self.replace_tag(soup, "h1", "h2")            
+        
+        if included:
+            self.included_content += str(soup)
+        else:
+            self.root_content += str(soup)
         
         self.content += str(soup)
+            
         
         for candidate_link in links_list:
                     
@@ -103,15 +126,21 @@ class WikiExporter(object):
                 continue
                 
             if self.slugify_name(candidate_link) != self.slugify_name(doc_link_name):
-                candidate_doc = self.get_doc_for_link(doc, candidate_link)
-                self.done_links.append(candidate_link)
+                candidate_doc = self.get_doc_for_link(doc, candidate_link, doc)
+                if candidate_doc:
+                    self.done_links.append(candidate_link)
 
                 if candidate_doc:
                     anchor_name = self.get_anchor_name(candidate_link)
                     tag = '<div class="page-breaker"></div><a name="%s">' % anchor_name
+                    if included:
+                        self.included_content += str(BeautifulSoup(tag))
+                    else:
+                        self.root_content += str(BeautifulSoup(tag))
+                    
                     self.content += str(BeautifulSoup(tag))
 
-                    self.parse_doc(candidate_doc)
+                    self.parse_doc(candidate_doc, included=True)
 
     
     
@@ -152,11 +181,13 @@ class WikiExporter(object):
 
 if __name__ == '__main__':
     
-    root_doc = sys.argv[1]
+    root_docs = sys.argv[1].split(",")
     output_file = sys.argv[2]
-    
+
+    worker = WikiExporter(root_docs)
+        
     if '--bootstrap' in sys.argv:
         worker.css_media.append('bootstrap.min.css')
     
-    worker = WikiExporter(root_doc)
+
     worker.export_doc(output_file)

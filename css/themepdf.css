@@ -1,2 +1,18 @@
-html, body{font-size:14px;}
-.page-breaker{page-break-after:always;}
+html, body{font-size:13px;}
+.page-breaker{
+	
+	 page-break-after:always; 
+	/* margin-bottom:100px;*/
+}
+
+
+a.pageref::after { 
+  content: " pag. " target-counter(attr(href), page) 
+}
+
+
+@page :left {
+  @bottom-left {
+    content: counter(page);
+  }
+}
