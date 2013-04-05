@@ -119,7 +119,8 @@ class WikiExporter(object):
         
         self.content += str(soup)
             
-        
+        if True:
+            return
         for candidate_link in links_list:
                     
             if candidate_link in self.done_links:
