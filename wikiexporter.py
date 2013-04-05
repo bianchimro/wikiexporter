@@ -23,9 +23,9 @@ class WikiExporter(object):
         
         
         
-    def export_doc(self, output_file):
+    def export_doc(self, output_file, include_children=True):
         for root_doc in self.root_docs:
-            self.parse_doc(root_doc)
+            self.parse_doc(root_doc, include_children=include_children)
         self.write_file(output_file)
     
     def get_doc_link_name(self, doc):
@@ -82,7 +82,7 @@ class WikiExporter(object):
         for t in targets:
             t.name = dest_tag
             
-    def parse_doc(self, doc, included=False):
+    def parse_doc(self, doc, included=False, include_children=True):
     
         doc_link_name = self.get_doc_link_name(doc) 
     
@@ -119,8 +119,9 @@ class WikiExporter(object):
         
         self.content += str(soup)
             
-        if True:
+        if not include_children:
             return
+            
         for candidate_link in links_list:
                     
             if candidate_link in self.done_links:
@@ -141,7 +142,7 @@ class WikiExporter(object):
                     
                     self.content += str(BeautifulSoup(tag))
 
-                    self.parse_doc(candidate_doc, included=True)
+                    self.parse_doc(candidate_doc, included=True, include_children=include_children)
 
     
     
@@ -184,11 +185,11 @@ if __name__ == '__main__':
     
     root_docs = sys.argv[1].split(",")
     output_file = sys.argv[2]
-
+    
     worker = WikiExporter(root_docs)
         
     if '--bootstrap' in sys.argv:
         worker.css_media.append('bootstrap.min.css')
     
-
-    worker.export_doc(output_file)
+    include_children = '--include-children' in sys.argv
+    worker.export_doc(output_file, include_children=include_children)
