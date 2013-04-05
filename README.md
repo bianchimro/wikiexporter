@@ -6,14 +6,17 @@ A very simple github wiki exporter … really minimal right now
 
  Usage:
  
- 	python wikiexporter.py path_to_your_root_document output_file.html
+ 	python wikiexporter.py path_to_your_root_document output_file.html [--bootstrap] [--include-children]
  	
  	
 Dependencies are in requirements.txt
  	
- 
-The root doc and all documents linked will be included in html and all links will be transformed to local anchors.
-
+Switches: 
+* --include-children: The root doc and all documents linked will be included in html
+   and all links will be transformed to local anchors. Otherwise only the root document
+   will be converted
+   
+* --bootstrap: includes css from twitter bootstrap. the css is inlined in the output html
 
 #TODOS
 
@@ -22,5 +25,5 @@ The root doc and all documents linked will be included in html and all links wil
 *  Support other markup formats  
 *  Options for parsing doc (recursive or not)
 *  Style options
-*  CSS and Js inclusions … (theme - like)
+*  better CSS and Js inclusions … (theme - like)
 *  Package it
